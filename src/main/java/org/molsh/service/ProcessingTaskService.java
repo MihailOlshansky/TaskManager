@@ -1,7 +1,7 @@
 package org.molsh.service;
 
 import jakarta.transaction.Transactional;
-import org.molsh.common.Status;
+import org.molsh.common.ProcessingTaskStatus;
 import org.molsh.dto.ProcessingTaskDto;
 import org.molsh.entity.ProcessingTask;
 import org.molsh.entity.User;
@@ -28,21 +28,21 @@ public class ProcessingTaskService {
         ProcessingTask task = new ProcessingTask();
         task.setCreatedDate(new Date());
         task.setPriority(processingTaskDto.getPriority());
-        task.setStatus(Status.Created.name());
+        task.setStatus(ProcessingTaskStatus.Created);
         task.setUser(user);
 
         return processingTaskRepository.save(task);
     }
 
-    public void changeStatus(Long id, Status status) {
+    public void changeStatus(Long id, ProcessingTaskStatus status) {
         ProcessingTask task = processingTaskRepository.findById(id).orElse(null);
         if (task == null) {
             throw new RuntimeException(String.format("Processing task with id %d not found", id));
         }
-        if (!Status.valueOf(task.getStatus()).isNext(status)) {
+        if (!task.getStatus().isNext(status)) {
             throw new RuntimeException(String.format("Can't change status %s to %s", task.getStatus(), status));
         }
 
-        processingTaskRepository.updateStatus(id, status.name());
+        processingTaskRepository.updateStatus(id, status);
     }
 }

@@ -2,7 +2,10 @@ package org.molsh.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Type;
 import org.hibernate.proxy.HibernateProxy;
+import org.molsh.common.UserRole;
+import org.molsh.common.usertypes.UserRoleType;
 
 import java.util.Objects;
 import java.util.Set;
@@ -21,7 +24,8 @@ public class User {
     @Column(name = "username")
     private String username;
     @Column(name = "roles")
-    private String roles;
+    @Type(value = UserRoleType.class)
+    private UserRole roles;
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, targetEntity = ProcessingTask.class)
     @ToString.Exclude
     private Set<ProcessingTask> tasks;

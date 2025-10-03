@@ -1,6 +1,6 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-    <changeSet id="create_schema_if_not_exists.xml" author="omd">
+    <changeSet id="create_schema_if_not_exists" author="omd">
         <sql>
             CREATE SCHEMA IF NOT EXISTS taskmanager;
         </sql>

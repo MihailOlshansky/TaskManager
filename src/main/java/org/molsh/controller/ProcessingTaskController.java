@@ -1,6 +1,6 @@
 package org.molsh.controller;
 
-import org.molsh.common.Status;
+import org.molsh.common.ProcessingTaskStatus;
 import org.molsh.dto.ProcessingTaskDto;
 import org.molsh.entity.ProcessingTask;
 import org.molsh.service.ProcessingTaskService;
@@ -27,7 +27,7 @@ public class ProcessingTaskController {
     }
 
     @PostMapping("change/status/{taskId}")
-    private void changeStatus(@PathVariable(name = "taskId") Long taskId, @RequestBody Status status) {
+    private void changeStatus(@PathVariable(name = "taskId") Long taskId, @RequestBody ProcessingTaskStatus status) {
         processingTaskService.changeStatus(taskId, status);
     }
 }

@@ -3,7 +3,10 @@ package org.molsh.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Type;
 import org.hibernate.proxy.HibernateProxy;
+import org.molsh.common.ProcessingTaskStatus;
+import org.molsh.common.usertypes.ProcessingTaskStatusType;
 
 import java.util.Date;
 import java.util.Objects;
@@ -21,7 +24,8 @@ public class ProcessingTask {
     private Long id;
 
     @Column(name = "status")
-    private String status;
+    @Type(value = ProcessingTaskStatusType.class)
+    private ProcessingTaskStatus status;
     @Column(name = "priority")
     private Integer priority;
 

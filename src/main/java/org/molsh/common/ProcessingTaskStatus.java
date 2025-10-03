@@ -2,19 +2,19 @@ package org.molsh.common;
 
 import java.util.Set;
 
-public enum Status {
+public enum ProcessingTaskStatus {
     Complete(Set.of()),
     Canceled(Set.of()),
     InProgress(Set.of(Complete, Canceled)),
     Created(Set.of(InProgress));
 
-    private final Set<Status> next;
+    private final Set<ProcessingTaskStatus> next;
 
-    Status(Set<Status> next) {
+    ProcessingTaskStatus(Set<ProcessingTaskStatus> next) {
         this.next = next;
     }
 
-    public boolean isNext(Status status) {
+    public boolean isNext(ProcessingTaskStatus status) {
         return next.contains(status);
     }
 }

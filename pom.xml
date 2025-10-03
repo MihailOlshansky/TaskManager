@@ -38,6 +38,7 @@
   </dependencyManagement>
 
   <dependencies>
+    <!-- Java + Spring -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -55,20 +56,25 @@
       <version>${spring.boot.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <scope>runtime</scope>
-      <version>${postgresql.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <version>${lombok.version}</version>
     </dependency>
+
+
+    <!-- Swagger -->
     <dependency>
       <groupId>org.springdoc</groupId>
       <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
       <version>${swagger.version}</version>
+    </dependency>
+
+    <!-- Database -->
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>runtime</scope>
+      <version>${postgresql.version}</version>
     </dependency>
     <dependency>
       <groupId>net.lbruun.springboot</groupId>
