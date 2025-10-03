@@ -1,0 +1,44 @@
+version: '3.8'
+
+networks:
+  net:
+
+volumes:
+  postgres_data:
+
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/backend.build.Dockerfile
+    ports:
+      - "4200:4200"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/taskmanager
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+    depends_on:
+      - db
+    networks: [net]
+
+  db:
+    image: postgres:17-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=taskmanager
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks: [net]
+
+  adminer:
+    image: adminer:4.8.1-standalone
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    networks: [net]

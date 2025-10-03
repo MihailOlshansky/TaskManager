@@ -1,0 +1,7 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <include file="classpath:liquibase/changelog/2025-10-02_01_create_schema_if_not_exists.xml" relativeToChangelogFile="false" />
+    <include file="classpath:liquibase/changelog/2025-10-02_02_create_user_table.xml" relativeToChangelogFile="false" />
+    <include file="classpath:liquibase/changelog/2025-10-02_03_create_processingtask_table.xml" relativeToChangelogFile="false" />
+</databaseChangeLog>

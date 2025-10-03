@@ -1,0 +1,41 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="create_processingtask_table.xml" author="omd">
+        <createTable tableName="processingtask" schemaName="taskmanager">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="status" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="priority" type="integer">
+                <constraints nullable="false" />
+            </column>
+            <column name="created_date" type="date">
+                <constraints nullable="false" />
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_processingtask_user" references="user(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create_processingtask_status_index" author="omd" >
+        <createIndex indexName="ix_processingtask_status" tableName="processingtask">
+            <column name="status"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="create_processingtask_priority_index" author="omd" >
+        <createIndex indexName="ix_processingtask_priority" tableName="processingtask">
+            <column name="priority"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="create_processingtask_created_date_index" author="omd" >
+        <createIndex indexName="ix_processingtask_created_date" tableName="processingtask">
+            <column name="created_date"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

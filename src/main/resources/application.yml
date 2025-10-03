@@ -1,0 +1,36 @@
+server:
+  port: 4200
+  servlet:
+    context-path: /taskmanager
+
+spring:
+  application:
+    name: TaskManager
+  datasource:
+    url: jdbc:postgresql://localhost:5432/taskmanager
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  liquibase:
+    default-schema: taskmanager
+    change-log: liquibase/master.xml
+
+  level:
+    root: INFO
+    org:
+      molsh: DEBUG
+      springframework.web: DEBUG
+      hibernate.SQ: DEBUG
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+
+
+springdoc:
+  swagger-ui:
+    disable-swagger-default-url: true
+    path: /swagger
+
+hibernate:
+  dialect: org.hibernate.dialect.PostgreSQLDialect
+
