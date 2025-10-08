@@ -1,0 +1,16 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="create_user_roles_enumeration" author="omd">
+        <sql>
+            CREATE TYPE user_role AS ENUM ('User','Admin');
+        </sql>
+        <comment>Create user roles enumeration</comment>
+    </changeSet>
+
+    <changeSet id="create_processingtask_statuses_enumeration" author="omd">
+        <sql>
+            CREATE TYPE processingtask_status AS ENUM ('Created','InProgress', 'Complete', 'Canceled');
+        </sql>
+        <comment>Create processing task statuses enumeration</comment>
+    </changeSet>
+</databaseChangeLog>
