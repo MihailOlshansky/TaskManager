@@ -6,10 +6,14 @@ import org.molsh.dto.ProcessingTaskDto;
 import org.molsh.entity.ProcessingTask;
 import org.molsh.entity.User;
 import org.molsh.repository.ProcessingTaskRepository;
+import org.molsh.taskprocessor.TaskProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class ProcessingTaskService {
@@ -17,6 +21,14 @@ public class ProcessingTaskService {
     private ProcessingTaskRepository processingTaskRepository;
     @Autowired
     private UserService userService;
+    @Lazy
+    @Autowired
+    @Qualifier("fastTaskProcessor")
+    private TaskProcessor fastTaskProcessor;
+    @Lazy
+    @Autowired
+    @Qualifier("slowTaskProcessor")
+    private TaskProcessor slowTaskProcessor;
 
     @Transactional
     public ProcessingTask createProcessingTask(ProcessingTaskDto processingTaskDto) {
@@ -26,7 +38,7 @@ public class ProcessingTaskService {
         }
 
         ProcessingTask task = new ProcessingTask();
-        task.setCreatedDate(new Date());
+        task.setCreatedDate(LocalDateTime.now());
         task.setPriority(processingTaskDto.getPriority());
         task.setStatus(ProcessingTaskStatus.Created);
         task.setUser(user);
@@ -44,5 +56,24 @@ public class ProcessingTaskService {
         }
 
         processingTaskRepository.updateStatus(id, status);
+    }
+
+    public List<ProcessingTask> findAll(Iterable<Long> ids) {
+        return processingTaskRepository.findAllById(ids);
+    }
+
+    public void addTask(Long id) {
+        addTasks(List.of(id));
+    }
+
+    public void addTasks(Iterable<Long> ids) {
+        List<ProcessingTask> tasks = processingTaskRepository.findAllById(ids);
+        slowTaskProcessor.addTasks(tasks);
+        fastTaskProcessor.addTasks(tasks);
+    }
+
+    public void processTasks() {
+        fastTaskProcessor.processTasks();
+        slowTaskProcessor.processTasks();
     }
 }

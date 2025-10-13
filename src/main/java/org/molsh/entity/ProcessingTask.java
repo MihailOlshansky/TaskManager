@@ -8,7 +8,7 @@ import org.hibernate.proxy.HibernateProxy;
 import org.molsh.common.ProcessingTaskStatus;
 import org.molsh.common.usertypes.ProcessingTaskStatusType;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -31,7 +31,7 @@ public class ProcessingTask {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
     @Column(name = "created_date")
-    private Date createdDate;
+    private LocalDateTime createdDate;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id")
     private User user;

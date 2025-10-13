@@ -12,7 +12,7 @@
             <column name="priority" type="integer">
                 <constraints nullable="false" />
             </column>
-            <column name="created_date" type="date">
+            <column name="created_date" type="datetime">
                 <constraints nullable="false" />
             </column>
             <column name="user_id" type="bigint">

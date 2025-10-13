@@ -9,7 +9,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/taskmanager
     username: postgres
-    password: postgres
+    password: Misha2002
     driver-class-name: org.postgresql.Driver
 
   liquibase:
@@ -33,4 +33,3 @@ springdoc:
 
 hibernate:
   dialect: org.hibernate.dialect.PostgreSQLDialect
-
