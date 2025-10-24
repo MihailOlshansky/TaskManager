@@ -23,4 +23,8 @@ public class UserService {
     public User find(Long id) {
         return userRepository.findById(id).orElse(null);
     }
+    public User findNonNull(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException(String.format("User with id %d not found", id)));
+    }
 }

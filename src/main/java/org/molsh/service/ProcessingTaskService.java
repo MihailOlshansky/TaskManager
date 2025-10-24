@@ -1,7 +1,9 @@
 package org.molsh.service;
 
 import jakarta.transaction.Transactional;
+import org.molsh.common.ProcessingTaskPrototype;
 import org.molsh.common.ProcessingTaskStatus;
+import org.molsh.common.mapper.ProcessingTaskMapper;
 import org.molsh.dto.ProcessingTaskDto;
 import org.molsh.entity.ProcessingTask;
 import org.molsh.entity.User;
@@ -14,9 +16,13 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProcessingTaskService {
+    public static Integer MIN_PRIORITY = 0;
+    public static Integer MAX_PRIORITY = 10;
+
     @Autowired
     private ProcessingTaskRepository processingTaskRepository;
     @Autowired
@@ -30,20 +36,39 @@ public class ProcessingTaskService {
     @Qualifier("slowTaskProcessor")
     private TaskProcessor slowTaskProcessor;
 
+    @Autowired
+    private ProcessingTaskMapper processingTaskMapper;
+
     @Transactional
     public ProcessingTask createProcessingTask(ProcessingTaskDto processingTaskDto) {
-        User user = userService.find(processingTaskDto.getUserId());
-        if (user == null) {
-            throw new RuntimeException(String.format("User with id %d not found", processingTaskDto.getUserId()));
-        }
+        User user = userService.findNonNull(processingTaskDto.getUserId());
 
-        ProcessingTask task = new ProcessingTask();
-        task.setCreatedDate(LocalDateTime.now());
-        task.setPriority(processingTaskDto.getPriority());
-        task.setStatus(ProcessingTaskStatus.Created);
-        task.setUser(user);
+        ProcessingTask task = ProcessingTask.builder()
+                .priority(processingTaskDto.getPriority())
+                .createdDate(processingTaskDto.getCreatedDate() != null
+                        ? processingTaskDto.getCreatedDate()
+                        : LocalDateTime.now())
+                .status(ProcessingTaskStatus.Created)
+                .user(user)
+                .build();
 
         return processingTaskRepository.save(task);
+    }
+
+    public ProcessingTask updateProcessingTask(ProcessingTaskDto processingTaskDto) {
+        if (processingTaskDto.getId() == null) {
+            throw new RuntimeException("No id found");
+        }
+
+        ProcessingTask processingTask = processingTaskRepository.findById(processingTaskDto.getId())
+                .orElseThrow(() ->new RuntimeException(
+                        String.format("No task with id %d found", processingTaskDto.getId())));
+
+        processingTaskMapper.setNotNullProperties(processingTask, processingTaskDto);
+        processingTaskRepository.save(processingTask);
+
+        return processingTask;
+
     }
 
     public void changeStatus(Long id, ProcessingTaskStatus status) {
@@ -56,6 +81,10 @@ public class ProcessingTaskService {
         }
 
         processingTaskRepository.updateStatus(id, status);
+    }
+
+    public Optional<ProcessingTask> find(Long id) {
+        return processingTaskRepository.findById(id);
     }
 
     public List<ProcessingTask> findAll(Iterable<Long> ids) {
@@ -75,5 +104,29 @@ public class ProcessingTaskService {
     public void processTasks() {
         fastTaskProcessor.processTasks();
         slowTaskProcessor.processTasks();
+    }
+
+    public ProcessingTask createHighPriorityTask(Long userId)
+    {
+        ProcessingTask task = ProcessingTaskPrototype.highPriorityTask();
+        task.setUser(userService.findNonNull(userId));
+
+        return processingTaskRepository.save(task);
+    }
+
+    public ProcessingTask createLowPriorityTask(Long userId)
+    {
+        ProcessingTask task = ProcessingTaskPrototype.lowPriorityTask();
+        task.setUser(userService.findNonNull(userId));
+
+        return processingTaskRepository.save(task);
+    }
+
+    public ProcessingTask createDefaultTask(Long userId)
+    {
+        ProcessingTask task = ProcessingTaskPrototype.defaultTask();
+        task.setUser(userService.findNonNull(userId));
+
+        return processingTaskRepository.save(task);
     }
 }

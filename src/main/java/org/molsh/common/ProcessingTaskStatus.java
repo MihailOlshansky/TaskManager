@@ -1,20 +1,30 @@
 package org.molsh.common;
 
-import java.util.Set;
-
 public enum ProcessingTaskStatus {
-    Complete(Set.of()),
-    Canceled(Set.of()),
-    InProgress(Set.of(Complete, Canceled)),
-    Created(Set.of(InProgress));
+    Created {
+        @Override
+        public boolean isNext(ProcessingTaskStatus status) {
+            return status == InProgress;
+        }
+    },
+    InProgress {
+        @Override
+        public boolean isNext(ProcessingTaskStatus status) {
+            return status == Complete || status == Canceled;
+        }
+    },
+    Canceled {
+        @Override
+        public boolean isNext(ProcessingTaskStatus status) {
+            return false;
+        }
+    },
+    Complete  {
+        @Override
+        public boolean isNext(ProcessingTaskStatus status) {
+            return false;
+        }
+    };
 
-    private final Set<ProcessingTaskStatus> next;
-
-    ProcessingTaskStatus(Set<ProcessingTaskStatus> next) {
-        this.next = next;
-    }
-
-    public boolean isNext(ProcessingTaskStatus status) {
-        return next.contains(status);
-    }
+    public abstract boolean isNext(ProcessingTaskStatus status);
 }

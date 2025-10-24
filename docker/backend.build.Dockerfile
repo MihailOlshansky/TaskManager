@@ -1,8 +1,13 @@
-FROM openjdk:17-jdk-slim
-COPY /src /src
-COPY pom.xml /
-CMD mvn -f /pom.xml clean package
+# Используем официальный образ Maven для сборки проекта
+FROM maven:3.9.6-eclipse-temurin-17 AS build
+WORKDIR /app
+COPY pom.xml .
+RUN mvn dependency:go-offline
+COPY src ./src
+RUN mvn package
 
-COPY /target/*.jar application.jar
-EXPOSE 8080 4200
-ENTRYPOINT ["java", "-jar", "application.jar"]
+# Используем официальный образ OpenJDK для запуска приложения
+FROM eclipse-temurin:17-jdk-jammy
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
+ENTRYPOINT ["java", "-jar", "app.jar"]

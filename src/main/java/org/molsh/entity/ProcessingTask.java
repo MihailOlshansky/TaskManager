@@ -17,6 +17,8 @@ import java.util.Objects;
 @Setter
 @ToString
 @RequiredArgsConstructor
+@Builder
+@AllArgsConstructor
 public class ProcessingTask {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
