@@ -3,6 +3,7 @@ package org.molsh.taskprocessor;
 import org.molsh.common.ProcessingTaskStatus;
 import org.molsh.common.UserRole;
 import org.molsh.entity.ProcessingTask;
+import org.molsh.exception.BadRequestException;
 import org.molsh.service.ProcessingTaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -36,7 +37,7 @@ public class SlowTaskProcessor implements TaskProcessor {
     @Override
     public void addTask(ProcessingTask task) {
         if (task.getPriority() > MAX_PRIORITY) {
-            throw new RuntimeException(String.format("Priority %d is too high", task.getPriority()));
+            throw new BadRequestException(String.format("Priority %d is too high", task.getPriority()));
         }
 
         taskStatusCache.put(task.getId(), task.getStatus());

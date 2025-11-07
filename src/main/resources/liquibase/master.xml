@@ -5,4 +5,5 @@
     <include file="classpath:liquibase/changelog/2025-10-02_02_create_enums.xml" relativeToChangelogFile="false" />
     <include file="classpath:liquibase/changelog/2025-10-02_03_create_user_table.xml" relativeToChangelogFile="false" />
     <include file="classpath:liquibase/changelog/2025-10-02_04_create_processingtask_table.xml" relativeToChangelogFile="false" />
+    <include file="classpath:liquibase/changelog/2025-11-04_01_update_user_table.xml" relativeToChangelogFile="false" />
 </databaseChangeLog>

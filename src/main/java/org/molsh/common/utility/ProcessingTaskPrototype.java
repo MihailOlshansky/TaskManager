@@ -1,12 +1,13 @@
-package org.molsh.common;
+package org.molsh.common.utility;
 
+import org.molsh.common.ProcessingTaskStatus;
 import org.molsh.entity.ProcessingTask;
 import org.molsh.service.ProcessingTaskService;
 
 import java.time.LocalDateTime;
 
-public interface ProcessingTaskPrototype {
-    static ProcessingTask highPriorityTask() {
+public class ProcessingTaskPrototype {
+    public static ProcessingTask highPriorityTask() {
         return ProcessingTask.builder()
                 .createdDate(LocalDateTime.now())
                 .priority(ProcessingTaskService.MAX_PRIORITY)
@@ -14,7 +15,7 @@ public interface ProcessingTaskPrototype {
                 .build();
     }
 
-    static ProcessingTask lowPriorityTask() {
+    public static ProcessingTask lowPriorityTask() {
         return ProcessingTask.builder()
                 .createdDate(LocalDateTime.now())
                 .priority(ProcessingTaskService.MIN_PRIORITY)
@@ -22,7 +23,7 @@ public interface ProcessingTaskPrototype {
                 .build();
     }
 
-    static ProcessingTask defaultTask() {
+    public static ProcessingTask defaultTask() {
         return ProcessingTask.builder()
                 .createdDate(LocalDateTime.now())
                 .priority((ProcessingTaskService.MAX_PRIORITY + ProcessingTaskService.MIN_PRIORITY) / 2)

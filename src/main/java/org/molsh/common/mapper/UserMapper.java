@@ -2,7 +2,7 @@ package org.molsh.common.mapper;
 
 import org.molsh.dto.UserDto;
 import org.molsh.entity.User;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.molsh.exception.WrongIdException;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -10,10 +10,12 @@ import java.util.Objects;
 import static java.util.Objects.requireNonNullElse;
 
 @Component
-@Qualifier("userMapper")
 public class UserMapper implements EntityMapper<User, UserDto> {
     @Override
     public UserDto entityToDto(User user) {
+        if (user == null) {
+            return null;
+        }
         return UserDto.builder()
                 .id(user.getId())
                 .username(user.getUsername())
@@ -23,8 +25,12 @@ public class UserMapper implements EntityMapper<User, UserDto> {
 
     @Override
     public void setNotNullProperties(User user, UserDto userDto) {
+        if (user == null || userDto == null) {
+            return;
+        }
+
         if (!Objects.equals(user.getId(), userDto.getId())) {
-            throw new RuntimeException("Entity and dto have different ids");
+            throw new WrongIdException();
         }
 
         user.setUsername(requireNonNullElse(userDto.getUsername(), user.getUsername()));

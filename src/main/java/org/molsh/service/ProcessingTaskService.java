@@ -1,12 +1,15 @@
 package org.molsh.service;
 
 import jakarta.transaction.Transactional;
-import org.molsh.common.ProcessingTaskPrototype;
+import org.molsh.common.mapper.EntityMapper;
+import org.molsh.common.utility.ProcessingTaskPrototype;
 import org.molsh.common.ProcessingTaskStatus;
-import org.molsh.common.mapper.ProcessingTaskMapper;
 import org.molsh.dto.ProcessingTaskDto;
 import org.molsh.entity.ProcessingTask;
 import org.molsh.entity.User;
+import org.molsh.exception.BadRequestException;
+import org.molsh.exception.EntityNotFoundException;
+import org.molsh.exception.ProcessingTaskStatusOrderException;
 import org.molsh.repository.ProcessingTaskRepository;
 import org.molsh.taskprocessor.TaskProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +40,7 @@ public class ProcessingTaskService {
     private TaskProcessor slowTaskProcessor;
 
     @Autowired
-    private ProcessingTaskMapper processingTaskMapper;
+    private EntityMapper<ProcessingTask, ProcessingTaskDto> processingTaskMapper;
 
     @Transactional
     public ProcessingTask createProcessingTask(ProcessingTaskDto processingTaskDto) {
@@ -57,12 +60,11 @@ public class ProcessingTaskService {
 
     public ProcessingTask updateProcessingTask(ProcessingTaskDto processingTaskDto) {
         if (processingTaskDto.getId() == null) {
-            throw new RuntimeException("No id found");
+            throw new BadRequestException("No id found");
         }
 
         ProcessingTask processingTask = processingTaskRepository.findById(processingTaskDto.getId())
-                .orElseThrow(() ->new RuntimeException(
-                        String.format("No task with id %d found", processingTaskDto.getId())));
+                .orElseThrow(() ->new EntityNotFoundException("ProcessingTask", processingTaskDto.getId()));
 
         processingTaskMapper.setNotNullProperties(processingTask, processingTaskDto);
         processingTaskRepository.save(processingTask);
@@ -74,10 +76,10 @@ public class ProcessingTaskService {
     public void changeStatus(Long id, ProcessingTaskStatus status) {
         ProcessingTask task = processingTaskRepository.findById(id).orElse(null);
         if (task == null) {
-            throw new RuntimeException(String.format("Processing task with id %d not found", id));
+            throw new EntityNotFoundException("ProcessingTask", id);
         }
         if (!task.getStatus().isNext(status)) {
-            throw new RuntimeException(String.format("Can't change status %s to %s", task.getStatus(), status));
+            throw new ProcessingTaskStatusOrderException(task.getStatus(), status);
         }
 
         processingTaskRepository.updateStatus(id, status);

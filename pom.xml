@@ -27,6 +27,7 @@
     <mockito-core.version>5.7.0</mockito-core.version>
     <jackson-databind.version>2.19.2</jackson-databind.version>
     <jackson-dataformat-xml.version>2.19.2</jackson-dataformat-xml.version>
+    <spring-security-web.version>6.4.3</spring-security-web.version>
   </properties>
 
   <dependencyManagement>
@@ -60,11 +61,30 @@
       <version>${spring.boot.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+      <version>${spring.boot.version}</version>
+    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.springframework.boot</groupId>-->
+<!--      <artifactId>spring-boot-starter-thymeleaf</artifactId>-->
+<!--      <version>${spring.boot.version}</version>-->
+<!--    </dependency>-->
+    <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <version>${lombok.version}</version>
     </dependency>
-
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-config</artifactId>
+      <version>6.4.3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-web</artifactId>
+      <version>6.4.3</version>
+    </dependency>
 
     <!-- Swagger -->
     <dependency>

@@ -1,13 +1,18 @@
 package org.molsh.controller;
 
-import org.molsh.common.ProcessingTaskPrototype;
+import java.util.ArrayList;
+import java.util.List;
+import org.molsh.common.UserRole;
+import org.molsh.common.utility.ProcessingTaskPrototype;
 import org.molsh.common.ProcessingTaskStatus;
 import org.molsh.common.mapper.EntityMapper;
 import org.molsh.dto.ProcessingTaskDto;
+import org.molsh.dto.TaskPrototypeCreationDto;
 import org.molsh.entity.ProcessingTask;
+import org.molsh.entity.User;
 import org.molsh.service.ProcessingTaskService;
+import org.molsh.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -22,7 +27,9 @@ public class ProcessingTaskController {
     private ProcessingTaskService processingTaskService;
 
     @Autowired
-    @Qualifier("processingTaskMapper")
+    private UserService userService;
+
+    @Autowired
     private EntityMapper<ProcessingTask, ProcessingTaskDto> processingTaskMapper;
 
     @GetMapping(value = "/{taskId}",
@@ -66,12 +73,16 @@ public class ProcessingTaskController {
     private void test(@RequestBody Integer taskAmount) {
         long minId = Long.MAX_VALUE;
         long maxId = 0L;
+        List<Long> users = new ArrayList<>();
+        userService.findFirstByRole(UserRole.User).map(User::getId).ifPresent(users::add);
+        userService.findFirstByRole(UserRole.Admin).map(User::getId).ifPresent(users::add);
+
         for (int i = 1; i < taskAmount; i++) {
             ProcessingTask task = processingTaskService.createProcessingTask(ProcessingTaskDto.builder()
                     .priority(i % 11)
                     .status(ProcessingTaskStatus.Created)
                     .createdDate(LocalDateTime.now())
-                    .userId(i % 2 + 1L)
+                    .userId(users.get(i % users.size()))
                     .build());
             minId = Math.min(minId, task.getId());
             maxId = Math.max(maxId, task.getId());
@@ -88,9 +99,9 @@ public class ProcessingTaskController {
         return processingTaskMapper.entityToDto(ProcessingTaskPrototype.highPriorityTask());
     }
     @PostMapping("/high-priority")
-    public ProcessingTaskDto createHighPriorityTask(@RequestBody Long userId) {
+    public ProcessingTaskDto createHighPriorityTask(@RequestBody TaskPrototypeCreationDto dto) {
         return processingTaskMapper.entityToDto(
-                processingTaskService.createHighPriorityTask(userId));
+                processingTaskService.createHighPriorityTask(dto.getUserId()));
     }
 
     @GetMapping("/low-priority/prototype")
@@ -98,9 +109,9 @@ public class ProcessingTaskController {
         return processingTaskMapper.entityToDto(ProcessingTaskPrototype.lowPriorityTask());
     }
     @PostMapping("/low-priority")
-    public ProcessingTaskDto createLowPriorityTask(@RequestBody Long userId) {
+    public ProcessingTaskDto createLowPriorityTask(@RequestBody TaskPrototypeCreationDto dto) {
         return processingTaskMapper.entityToDto(
-                processingTaskService.createLowPriorityTask(userId));
+                processingTaskService.createLowPriorityTask(dto.getUserId()));
     }
 
     @GetMapping("/default/prototype")
@@ -108,8 +119,8 @@ public class ProcessingTaskController {
         return processingTaskMapper.entityToDto(ProcessingTaskPrototype.defaultTask());
     }
     @PostMapping("/default")
-    public ProcessingTaskDto createDefaultTask(@RequestBody Long userId) {
+    public ProcessingTaskDto createDefaultTask(@RequestBody TaskPrototypeCreationDto dto) {
         return processingTaskMapper.entityToDto(
-                processingTaskService.createDefaultTask(userId));
+                processingTaskService.createDefaultTask(dto.getUserId()));
     }
 }

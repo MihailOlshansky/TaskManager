@@ -3,9 +3,11 @@ package org.molsh.common.mapper;
 import org.molsh.dto.ProcessingTaskDto;
 import org.molsh.entity.ProcessingTask;
 import org.molsh.entity.User;
+import org.molsh.exception.EntityNotFoundException;
+import org.molsh.exception.WrongIdException;
 import org.molsh.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -13,13 +15,16 @@ import java.util.Objects;
 import static java.util.Objects.requireNonNullElse;
 
 @Component
-@Qualifier("processingTaskMapper")
 public class ProcessingTaskMapper implements EntityMapper<ProcessingTask, ProcessingTaskDto>{
     @Autowired
+    @Lazy
     private UserService userService;
 
     @Override
     public ProcessingTaskDto entityToDto(ProcessingTask task) {
+        if (task == null) {
+            return null;
+        }
         return ProcessingTaskDto.builder()
                 .id(task.getId())
                 .createdDate(task.getCreatedDate())
@@ -31,18 +36,22 @@ public class ProcessingTaskMapper implements EntityMapper<ProcessingTask, Proces
 
     @Override
     public void setNotNullProperties(ProcessingTask task, ProcessingTaskDto dto) {
+        if (task == null || dto == null) {
+            return;
+        }
+
         if (!Objects.equals(task.getId(), dto.getId())) {
-            throw new RuntimeException("Entity and dto have different ids");
+            throw new WrongIdException();
         }
 
         task.setStatus(requireNonNullElse(dto.getStatus(), task.getStatus()));
         task.setCreatedDate(requireNonNullElse(dto.getCreatedDate(), task.getCreatedDate()));
         task.setPriority(requireNonNullElse(dto.getPriority(), task.getPriority()));
         User user = dto.getUserId() != null && !dto.getUserId().equals(task.getUser().getId())
-                ? userService.find(dto.getId())
+                ? userService.find(dto.getUserId())
                 : task.getUser();
         if (user == null) {
-            throw new RuntimeException(String.format("User with id %d not found", dto.getUserId()));
+            throw new EntityNotFoundException("User", dto.getUserId());
         }
         task.setUser(user);
     }

@@ -25,6 +25,11 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
 
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
 
 springdoc:
   swagger-ui:
@@ -34,4 +39,3 @@ springdoc:
 
 hibernate:
   dialect: org.hibernate.dialect.PostgreSQLDialect
-
