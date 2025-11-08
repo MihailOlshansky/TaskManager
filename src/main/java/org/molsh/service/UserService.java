@@ -1,26 +1,35 @@
 package org.molsh.service;
 
-import jakarta.transaction.Transactional;
 import java.util.Optional;
 import org.molsh.common.UserRole;
 import org.molsh.dto.UserDto;
 import org.molsh.entity.User;
-import org.molsh.exception.EntityNotFoundException;
 import org.molsh.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserService {
+public final class UserService extends EntityService<User, UserDto>{
     @Autowired
-    PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private UserRepository userRepository;
 
-    @Transactional
-    public User createUser(UserDto userDto) {
+    @Override
+    protected JpaRepository<User, Long> getRepository() {
+        return userRepository;
+    }
+
+    @Override
+    public String getEntityName() {
+        return "User";
+    }
+
+    @Override
+    public User create(UserDto userDto) {
         User user = new User();
         user.setUsername(userDto.getUsername());
         user.setRoles(userDto.getRoles());
@@ -28,19 +37,11 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User find(Long id) {
-        return userRepository.findById(id).orElse(null);
-    }
-    public User findNonNull(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User", id));
-    }
-
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
     public Optional<User> findFirstByRole(UserRole role) {
-        return userRepository.findFirstByRole(role);
+        return userRepository.findFirstByRoles(role);
     }
 }

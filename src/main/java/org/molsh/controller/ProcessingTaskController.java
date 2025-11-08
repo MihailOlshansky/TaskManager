@@ -35,16 +35,14 @@ public class ProcessingTaskController {
     @GetMapping(value = "/{taskId}",
             produces = {APPLICATION_JSON_VALUE, APPLICATION_XML_VALUE})
     private ProcessingTaskDto getTask(@PathVariable(name = "taskId") Long taskId) {
-        return processingTaskService.find(taskId)
-                .map(processingTaskMapper::entityToDto)
-                .orElse(null);
+        return processingTaskMapper.entityToDto(processingTaskService.find(taskId));
     }
 
 
     @PostMapping(consumes = {APPLICATION_JSON_VALUE, APPLICATION_XML_VALUE},
             produces = {APPLICATION_JSON_VALUE, APPLICATION_XML_VALUE})
     private ProcessingTaskDto createTask(@RequestBody ProcessingTaskDto processingTaskDto) {
-        ProcessingTask task = processingTaskService.createProcessingTask(processingTaskDto);
+        ProcessingTask task = processingTaskService.create(processingTaskDto);
         return processingTaskMapper.entityToDto(task);
     }
 
@@ -78,7 +76,7 @@ public class ProcessingTaskController {
         userService.findFirstByRole(UserRole.Admin).map(User::getId).ifPresent(users::add);
 
         for (int i = 1; i < taskAmount; i++) {
-            ProcessingTask task = processingTaskService.createProcessingTask(ProcessingTaskDto.builder()
+            ProcessingTask task = processingTaskService.create(ProcessingTaskDto.builder()
                     .priority(i % 11)
                     .status(ProcessingTaskStatus.Created)
                     .createdDate(LocalDateTime.now())

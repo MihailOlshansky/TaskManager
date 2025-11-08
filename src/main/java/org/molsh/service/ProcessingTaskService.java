@@ -1,6 +1,5 @@
 package org.molsh.service;
 
-import jakarta.transaction.Transactional;
 import org.molsh.common.mapper.EntityMapper;
 import org.molsh.common.utility.ProcessingTaskPrototype;
 import org.molsh.common.ProcessingTaskStatus;
@@ -15,14 +14,14 @@ import org.molsh.taskprocessor.TaskProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
-public class ProcessingTaskService {
+public final class ProcessingTaskService extends EntityService<ProcessingTask, ProcessingTaskDto>{
     public static Integer MIN_PRIORITY = 0;
     public static Integer MAX_PRIORITY = 10;
 
@@ -41,22 +40,6 @@ public class ProcessingTaskService {
 
     @Autowired
     private EntityMapper<ProcessingTask, ProcessingTaskDto> processingTaskMapper;
-
-    @Transactional
-    public ProcessingTask createProcessingTask(ProcessingTaskDto processingTaskDto) {
-        User user = userService.findNonNull(processingTaskDto.getUserId());
-
-        ProcessingTask task = ProcessingTask.builder()
-                .priority(processingTaskDto.getPriority())
-                .createdDate(processingTaskDto.getCreatedDate() != null
-                        ? processingTaskDto.getCreatedDate()
-                        : LocalDateTime.now())
-                .status(ProcessingTaskStatus.Created)
-                .user(user)
-                .build();
-
-        return processingTaskRepository.save(task);
-    }
 
     public ProcessingTask updateProcessingTask(ProcessingTaskDto processingTaskDto) {
         if (processingTaskDto.getId() == null) {
@@ -85,12 +68,30 @@ public class ProcessingTaskService {
         processingTaskRepository.updateStatus(id, status);
     }
 
-    public Optional<ProcessingTask> find(Long id) {
-        return processingTaskRepository.findById(id);
+    @Override
+    protected JpaRepository<ProcessingTask, Long> getRepository() {
+        return processingTaskRepository;
     }
 
-    public List<ProcessingTask> findAll(Iterable<Long> ids) {
-        return processingTaskRepository.findAllById(ids);
+    @Override
+    public String getEntityName() {
+        return "ProcessingTask";
+    }
+
+    @Override
+    public ProcessingTask create(ProcessingTaskDto processingTaskDto) {
+        User user = userService.findNonNull(processingTaskDto.getUserId());
+
+        ProcessingTask task = ProcessingTask.builder()
+                .priority(processingTaskDto.getPriority())
+                .createdDate(processingTaskDto.getCreatedDate() != null
+                        ? processingTaskDto.getCreatedDate()
+                        : LocalDateTime.now())
+                .status(ProcessingTaskStatus.Created)
+                .user(user)
+                .build();
+
+        return processingTaskRepository.save(task);
     }
 
     public void addTask(Long id) {

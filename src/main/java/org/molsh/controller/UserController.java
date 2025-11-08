@@ -23,7 +23,7 @@ public class UserController {
 
     @PostMapping
     private UserDto createUser(@RequestBody UserDto userDto) {
-        return userMapper.entityToDto(userService.createUser(userDto));
+        return userMapper.entityToDto(userService.create(userDto));
     }
     @GetMapping("/{userId}")
     private UserDto getUser(@PathVariable("userId") Long userId) {

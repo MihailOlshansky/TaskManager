@@ -16,7 +16,7 @@ public class AuthController {
     @Autowired
     private EntityMapper<User, UserDto> userMapper;
     @PostMapping("/register")
-    UserDto register(@RequestBody UserDto userDto) {
-        return userMapper.entityToDto(userService.createUser(userDto));
+    private UserDto register(@RequestBody UserDto userDto) {
+        return userMapper.entityToDto(userService.create(userDto));
     }
 }
