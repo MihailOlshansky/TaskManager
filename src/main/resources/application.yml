@@ -39,3 +39,7 @@ springdoc:
 
 hibernate:
   dialect: org.hibernate.dialect.PostgreSQLDialect
+
+token:
+  signing:
+    key: # your secret key here

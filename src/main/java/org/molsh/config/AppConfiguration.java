@@ -1,12 +1,17 @@
 package org.molsh.config;
 
+import java.security.SecureRandom;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class AppConfiguration {
+    private final static long seed = 715381273942732865L;
 
     @Bean(name = "defaultTaskExecutor")
     @Primary
@@ -29,5 +34,13 @@ public class AppConfiguration {
         executor.setThreadNamePrefix("BigExecutor-");
         executor.initialize();
         return executor;
+    }
+
+    @Bean
+    @Scope("singleton")
+    public PasswordEncoder passwordEncoder() {
+        SecureRandom rnd = new SecureRandom();
+        rnd.setSeed(seed);
+        return new BCryptPasswordEncoder(10, rnd);
     }
 }

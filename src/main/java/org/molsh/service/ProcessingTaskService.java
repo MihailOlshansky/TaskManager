@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public final class ProcessingTaskService extends EntityService<ProcessingTask, ProcessingTaskDto>{
+public class ProcessingTaskService extends EntityService<ProcessingTask, ProcessingTaskDto>{
     public static Integer MIN_PRIORITY = 0;
     public static Integer MAX_PRIORITY = 10;
 

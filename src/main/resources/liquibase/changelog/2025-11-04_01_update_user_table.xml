@@ -9,4 +9,10 @@
         </addColumn>
         <comment>Update user table, add password field</comment>
     </changeSet>
+
+    <changeSet id="update_user_table_username_unique_constraint" author="omd">
+        <addUniqueConstraint tableName="user"
+                             columnNames="username"
+                             constraintName="user_username_unique"/>
+    </changeSet>
 </databaseChangeLog>

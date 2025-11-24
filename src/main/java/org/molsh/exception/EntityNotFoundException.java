@@ -13,4 +13,8 @@ public class EntityNotFoundException extends RuntimeException{
         super(String.format("%s with name %s not found", entityName, name));
     }
 
+    public EntityNotFoundException(String message) {
+        super(message);
+    }
+
 }
